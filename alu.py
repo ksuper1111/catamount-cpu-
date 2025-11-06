@@ -70,13 +70,13 @@ class Alu:
             case 0b000:
                 self._op = "ADD"
             case 0b001:
-                pass  # replace pass with correct assignment
+                self._op = "SUB"
             case 0b010:
-                pass  # replace pass with correct assignment
+                self._op = "AND"
             case 0b011:
-                pass  # replace pass with correct assignment
+                self._op = "OR"
             case 0b100:
-                pass  # replace pass with correct assignment
+                self._op = "SHFT"
             case _:
                 raise ValueError("Invalid control signal")
         # Return value is for testing.
@@ -95,17 +95,17 @@ class Alu:
     @property
     def negative(self):
         # Return negative flag
-        return None  # replace this with correct return statement
+        return bool(self._flags & N_FLAG)
 
     @property
     def carry(self):
         # Return carry flag
-        return None  # replace this with correct return statement
+        return bool(self._flags & C_FLAG)
 
     @property
     def overflow(self):
         # Return overflow flag
-        return None  # replace this with correct return statement
+        return bool(self._flags & V_FLAG)
 
     def execute(self, a, b):
         """
