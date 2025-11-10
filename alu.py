@@ -201,7 +201,10 @@ def _and(self, a, b):
         return x
 
     def _update_logic_flags(self, result):
-        pass  # replace pass with correct implementation
+            if result & (1 << (WORD_SIZE - 1)):
+                self._flags |= N_FLAG
+            if result == 0:
+                self._flags |= Z_FLAG
 
     def _update_arith_flags_add(self, a, b, result):
         """
@@ -221,7 +224,26 @@ def _and(self, a, b):
             self._flags |= V_FLAG
 
     def _update_arith_flags_sub(self, a, b, result):
-        pass  # replace pass with correct implementation
-
+        if result & (1 << (WORD_SIZE - 1)):
+            self._flags |= N_FLAG
+        if result == 0:
+            self._flags |= Z_FLAG
+        if a - b > WORD_MASK:
+            self._flags |= C_FLAG
+        sa, sb, sr = ((a >> (WORD_SIZE - 1)) & 1,
+                      (b >> (WORD_SIZE - 1)) & 1,
+                      (result >> (WORD_SIZE - 1)) & 1)
+        if sa != sb and sr != sa:
+            self._flags |= V_FLAG
     def _update_shift_flags(self, result, bit_out):
-        pass  # replace pass with correct implementation
+        if result & (1 << (WORD_SIZE - 1)):
+            self._flags |= N_FLAG
+        if result == 0:
+            self._flags |= Z_FLAG
+        if bit_out is not None:
+            if bit_out:
+                self._flags |= C_FLAG
+
+
+
+
