@@ -137,18 +137,17 @@ class Alu:
         a = a & WORD_MASK
         b = b & WORD_MASK
         result = (a - b) & WORD_MASK
-        self._update_arith_flags_add(a, b, result)
+        self._update_arith_flags_sub(a, b, result)
         return result
 
-
-def _and(self, a, b):
+    def _and(self, a, b):
         """
         Bitwise AND
         """
         a = a & WORD_MASK
         b = b & WORD_MASK
         result = (a & b) & WORD_MASK
-        self._update_arith_flags_add(a, b, result)
+        self._update_logic_flags(result)
         return result
 
     def _or(self, a, b):
@@ -158,7 +157,7 @@ def _and(self, a, b):
         a = a & WORD_MASK
         b = b & WORD_MASK
         result = (a | b) & WORD_MASK
-        self._update_arith_flags_add(a, b, result)
+        self._update_logic_flags(result)
         return result
 
     def _shft(self, a, b):
@@ -170,25 +169,31 @@ def _and(self, a, b):
         Keep in mind when we shift we need to keep track of the
         last bit shifted out. This is used to set the carry flag.
         """
-        a &= WORD_MASK  # Keep this line as is
-
-        # Replace these two lines with a complete implementation
-
+        a &= WORD_MASK
         if b == 0:
             result = a
             bit_out = None
-        elif b > 0:
-            b = b if b < WORD_SIZE else WORD_SIZE
-            bit_out = (a >> (WORD_SIZE - b)) & 0x1 if b > 0 else None
-            result = (a << b) & WORD_MASK
+            self._update_shift_flags(result, bit_out)
+            return result
+        if b > 0:
+            k = b if b < WORD_SIZE else WORD_SIZE
+            if k >= WORD_SIZE:
+                bit_out = 0
+                result = 0
+            else:
+                bit_out = (a >> (WORD_SIZE - k)) & 0x1
+                result = (a << k) & WORD_MASK
         else:
-            b = -b
-            b = b if b < WORD_SIZE else WORD_SIZE
-            bit_out = (a >> (b - 1)) & 0x1 if b > 0 else None
-            result = (a >> b) & WORD_MASK
-         # Keep these last two lines as they are
+            k = -b if -b < WORD_SIZE else WORD_SIZE
+            if k >= WORD_SIZE:
+                bit_out = 0
+                result = 0
+            else:
+                bit_out = (a >> (k - 1)) & 0x1
+                result = (a >> k) & WORD_MASK
         self._update_shift_flags(result, bit_out)
         return result
+
 
     def _to_signed(self, x):
         """
@@ -201,10 +206,10 @@ def _and(self, a, b):
         return x
 
     def _update_logic_flags(self, result):
-            if result & (1 << (WORD_SIZE - 1)):
-                self._flags |= N_FLAG
-            if result == 0:
-                self._flags |= Z_FLAG
+        if result & (1 << (WORD_SIZE - 1)):
+            self._flags |= N_FLAG
+        if result == 0:
+            self._flags |= Z_FLAG
 
     def _update_arith_flags_add(self, a, b, result):
         """
@@ -228,13 +233,14 @@ def _and(self, a, b):
             self._flags |= N_FLAG
         if result == 0:
             self._flags |= Z_FLAG
-        if a - b > WORD_MASK:
+        if a >= b:
             self._flags |= C_FLAG
         sa, sb, sr = ((a >> (WORD_SIZE - 1)) & 1,
                       (b >> (WORD_SIZE - 1)) & 1,
                       (result >> (WORD_SIZE - 1)) & 1)
         if sa != sb and sr != sa:
             self._flags |= V_FLAG
+
     def _update_shift_flags(self, result, bit_out):
         if result & (1 << (WORD_SIZE - 1)):
             self._flags |= N_FLAG
@@ -243,7 +249,3 @@ def _and(self, a, b):
         if bit_out is not None:
             if bit_out:
                 self._flags |= C_FLAG
-
-
-
-
