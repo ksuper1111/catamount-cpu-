@@ -1,7 +1,4 @@
 """
-Riley Stutzman
-Kali Banghart
-
 Starter code for Catamount Processor Unit ALU
 
 We are limited to 16 bits, and five operations: ADD, SUB, AND, OR, and SHFT.
@@ -33,7 +30,7 @@ instructions are needed for setting flags).
       bit shifted out on the right. For example, `0b1001 >> 1` would
       set carry flag to 1, and `0b1001 >> 2` would set carry flag to 0.
     - In the odd but permitted case of shift by zero, the carry flag
-      is left unchanged.h
+      is left unchanged.
     - Carry flag is never changed on a bitwise operation.
 
 - Overflow only applies to arithmetic operations.
@@ -172,6 +169,28 @@ class Alu:
         Keep in mind when we shift we need to keep track of the
         last bit shifted out. This is used to set the carry flag.
         """
+        a &= WORD_MASK
+        if b == 0:
+            result = a
+            bit_out = None
+            self._update_shift_flags(result, bit_out)
+            return result
+        if b > 0:
+            k = b if b < WORD_SIZE else WORD_SIZE
+            if k >= WORD_SIZE:
+                bit_out = 0
+                result = 0
+            else:
+                bit_out = (a >> (WORD_SIZE - k)) & 0x1
+                result = (a << k) & WORD_MASK
+        else:
+            k = -b if -b < WORD_SIZE else WORD_SIZE
+            if k >= WORD_SIZE:
+                bit_out = 0
+                result = 0
+            else:
+                bit_out = (a >> (k - 1)) & 0x1
+                result = (a >> k) & WORD_MASK
         a &= WORD_MASK  # Keep this line as is
 
         # Replace these two lines with a complete implementation
@@ -191,6 +210,7 @@ class Alu:
         # Keep these last two lines as they are
         self._update_shift_flags(result, bit_out)
         return result
+
 
     def _to_signed(self, x):
         """
