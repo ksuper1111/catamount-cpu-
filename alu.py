@@ -33,7 +33,7 @@ instructions are needed for setting flags).
       bit shifted out on the right. For example, `0b1001 >> 1` would
       set carry flag to 1, and `0b1001 >> 2` would set carry flag to 0.
     - In the odd but permitted case of shift by zero, the carry flag
-      is left unchanged.
+      is left unchanged.h
     - Carry flag is never changed on a bitwise operation.
 
 - Overflow only applies to arithmetic operations.
