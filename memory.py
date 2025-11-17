@@ -32,7 +32,7 @@ class Memory:
         if (address < 0):
             raise ValueError
         #test to make sure the address is not in the range 0xFFFF and 0xFF00, if so then ValueError
-        if (0xFFFF < address | address < 0xFF00):
+        if (0 > address or address > 0xFFFF):
             raise ValueError
 
 
@@ -44,7 +44,7 @@ class Memory:
 
         #tests if b is not boolean, if yes then TypeError
         if(not isinstance(b, bool)):
-            raise ValueError
+            raise TypeError
         #sets _write_enable
         self._write_enable = b
 
@@ -60,9 +60,8 @@ class Memory:
 
         #Checks is positive, and in the correct range, if not ValueError raise and program stops
         self._check_addr(addr)
-        #if address is correct, then return addr value from _cell or defult
-        return self._cells.get(addr, self.defult)
-
+        #if address is correct, then return addr value from _cell or default
+        return self._cells.get(addr, self.default)
 
 
     def write(self, addr, value):
