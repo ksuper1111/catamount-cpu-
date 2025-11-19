@@ -1,4 +1,7 @@
 """
+Riley Stutzman
+Kali Banghart
+
 Constants used by our Catamount Processor Unit.
 
 CS 2210 Computer Organization
