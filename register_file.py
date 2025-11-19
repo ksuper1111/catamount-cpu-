@@ -6,7 +6,7 @@ These do not include special-purpose registers elsewhere in the CPU:
   - etc.
 
 CS 2210 Computer Organization
-Clayton Cafiero <cbcafier@uvm.edu>
+Clayton Cafiero cbcafier@uvm.edu
 
 """
 
@@ -96,18 +96,18 @@ class RegisterFile:
             raise TypeError("Cannot read; no source register(s) specified!")
 
         if ra is None and rb is not None:
-                        raise TypeError("Cannot read; single register read should specify `ra`!")
-                    self._check_index(ra)
-                    if rb is not None:
-                        self._check_index(rb)
-                    a = self.registers[ra].read()
-                    b = self.registers[rb].read() if rb is not None else None
-                    return (a, b)
+            raise TypeError("Cannot read; single register read should specify `ra`!")
+        self._check_index(ra)
+        if rb is not None:
+            self._check_index(rb)
+        a = self.registers[ra].read()
+        b = self.registers[rb].read() if rb is not None else None
+        return (a, b)
 
 
 
 
-def _write(self, rd, data):
+    def _write(self, rd, data):
         """This is called if `write_enable` is `True`. This is how we detect
         that a write is intended. However, we need a destination and data for a
         successful write, so we have two failure modes (at this level):
@@ -133,16 +133,16 @@ def _write(self, rd, data):
         # method should call `_check_index()` to ensure index is good. If so,
         # it should call `write()` on the appropriate register, as selected by
         # `rd`. Replace `pass` below.
-         if rd is None:
-          raise TypeError("Cannot write; no destination specified!")
-         if data is None:
-             raise TypeError("Cannot write: no data!")
-            self._check_index(rd)
-            self.registers[rd].write(data)
+        if rd is None:
+            raise TypeError("Cannot write; no destination specified!")
+        if data is None:
+            raise TypeError("Cannot write: no data!")
+        self._check_index(rd)
+        self.registers[rd].write(data)
 
 
 
-def execute(self, rd=None, ra=None, rb=None, data=None, write_enable=False):
+    def execute(self, rd=None, ra=None, rb=None, data=None, write_enable=False):
         """
         `rd`: destination register (an `int`)
         `ra`: source register 1 (an `int`)

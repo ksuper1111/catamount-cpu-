@@ -177,6 +177,7 @@ class Alu:
         msb = b >> (WORD_SIZE - 1) & 1
         #bit mask the shift value, so only the first four bits are used
         b = b & 0B1111
+
         #if b is equal to zero no shift
         if b == 0:
             #no sift
