@@ -1,4 +1,7 @@
 """
+Riley Stutzman
+Kali Banghart
+
 We're going with Harvard architecture here. So we'll have two separate
 address spaces, one for data and one for instructions. A portion of data
 memory is reserved for the stack (addresses between 0xFFFF and 0xFF00).
@@ -25,15 +28,30 @@ class Memory:
         self._write_enable = False
 
     def _check_addr(self, address):
-        # Make sure address is positive, in the desired range,
+        #Make sure address is positive, in the desired range,
         # otherwise raise a `ValueError`. Replace `pass` below.
-        pass
+
+        #tests to see if the address is negative, if yes then ValueError
+        if (address < 0):
+            raise ValueError
+        #test to make sure the address is not in the range 0xFFFF and 0xFF00, if so then ValueError
+        if (0 > address or address > 0xFFFF):
+            raise ValueError
+
+
 
     def write_enable(self, b):
         # Make sure `b` is a Boolean (hint: use `isinstance()).
         # If not, raise `TypeError`. If OK, then set
         # `_write_enable` accordingly. Replace `pass` below.
-        pass
+
+        #tests if b is not boolean, if yes then TypeError
+        if(not isinstance(b, bool)):
+            raise TypeError
+        #sets _write_enable
+        self._write_enable = b
+
+
 
     def read(self, addr):
         """
@@ -42,7 +60,12 @@ class Memory:
         # Make sure `addr` is OK by calling `_check_addr`. If OK, return value
         # from `_cells` or default if never written. (Hint: use `.get()`.)
         # Replace `pass` below.
-        pass
+
+        #Checks is positive, and in the correct range, if not ValueError raise and program stops
+        self._check_addr(addr)
+        #if address is correct, then return addr value from _cell or default
+        return self._cells.get(addr, self.default)
+
 
     def write(self, addr, value):
         """
@@ -52,7 +75,16 @@ class Memory:
         # Otherwise, call `_check_addr()`. If OK, write masked value to the
         # selected address, then turn off `_write_enable` when done. Return
         # `True` on success. Replace `pass` below.
-        pass
+
+        #checks _write_enable,if doesn't hold then RunTimeError
+        if (not self._write_enable):
+            raise RuntimeError
+        #checks to see if address is valid
+        self._check_addr(addr)
+        #writes value to cell at the address provided
+        self._cells[addr] = (value & 0xFFFF)
+        #turns off _write_enable (false)
+        self._write_enable = False
         return True
 
     def hexdump(self, start=0, stop=None, width=8):
@@ -125,7 +157,19 @@ class InstructionMemory(Memory):
         # `super().write(start_addr + offset, word)` as needed. Important:
         # Ensure that `_loading` and `_write_enable` are set to `False` when
         # done. (Hint: use `try`/`finally`.) Replace `pass` below.
-        pass
+
+        #trying to write each word into instruction memory
+        try:
+            #loops through the words list, at the index offset
+            for offset, word in enumerate(words):
+                self._write_enable = True
+                #writes each word in successive addresses in instruction memory
+                super().write(start_addr + offset, word)
+        #_loading and _write_enable are set false
+        finally:
+            self._loading = False
+            self._write_enable = False
+
 
 
 if __name__ == "__main__":

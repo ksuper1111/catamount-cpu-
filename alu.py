@@ -1,5 +1,6 @@
 """
 Starter code for Catamount Processor Unit ALU
+
 We are limited to 16 bits, and five operations: ADD, SUB, AND, OR, and SHFT.
 
 ALU maintains status flags:
@@ -163,33 +164,45 @@ class Alu:
         """
         SHFT
 
-        shift left if b > 0, right if b < 0, no shift if b = 0
+        shift left if MSB of B == 0, right otherwise; no shift if b = 0
 
         Keep in mind when we shift we need to keep track of the
         last bit shifted out. This is used to set the carry flag.
         """
-        a &= WORD_MASK
+        a &= WORD_MASK  # Keep this line as is
+
+        # Replace these two lines with a complete implementation
+
+        #gets the most significant bit of
+        msb = b >> (WORD_SIZE - 1) & 1
+        #bit mask the shift value, so only the first four bits are used
+        b = b & 0B1111
+
+        #if b is equal to zero no shift
         if b == 0:
+            #no sift
+            #a stays the same and nothing is carried
             result = a
-            bit_out = None
+            bit_out = 0
+            #returns and completes operation
             self._update_shift_flags(result, bit_out)
             return result
-        if b > 0:
-            k = b if b < WORD_SIZE else WORD_SIZE
-            if k >= WORD_SIZE:
-                bit_out = 0
-                result = 0
-            else:
-                bit_out = (a >> (WORD_SIZE - k)) & 0x1
-                result = (a << k) & WORD_MASK
+
+        if msb == 0:
+            #shift a left by b
+            result = (a << b) & WORD_MASK
+            #the last bit shifted out sets the carry flag
+            #the last bit, when shifting left, is at index word_size - b, in the binary number
+            bit_out = (a >> (WORD_SIZE - b)) & 1
+
+        #otherwise shifts right
         else:
-            k = -b if -b < WORD_SIZE else WORD_SIZE
-            if k >= WORD_SIZE:
-                bit_out = 0
-                result = 0
-            else:
-                bit_out = (a >> (k - 1)) & 0x1
-                result = (a >> k) & WORD_MASK
+            #shift a right b times
+            result = (a >> b) & WORD_MASK
+            #the last LSB to be shifted out sets the carry flag
+            bit_out = (a >> (b - 1)) & 1
+
+        # Keep these last two lines as they are
         self._update_shift_flags(result, bit_out)
         return result
 
