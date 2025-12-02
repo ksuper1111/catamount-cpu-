@@ -92,13 +92,37 @@ class Cpu:
                 case "ADDI":
                     pass  # complete implementation here
                 case "ADD":
-                    pass  # complete implementation here
+                    rd = self._decoded.rd
+                    ra = self._decoded.ra
+                    rb = self._decoded.rb
+                    op_a,op_b = self._regs.execute(ra=ra, rb=rb)
+                    self._alu_set_op("ADD")
+                    result = self._alu.execute(op_a,op_b)
+                    self._regs.execute( rd=rd, data = result , write_enable=True)
                 case "SUB":
-                    pass  # complete implementation here
+                    rd = self._decoded.rd
+                    ra = self._decoded.ra
+                    rb = self._decoded.rb
+                    op_a,op_b = self._regs.execute(ra=ra, rb=rb)
+                    self._alu_set_op("SUB")
+                    result = self._alu.execute(op_a, op_b)
+                    self._regs.execute( rd=rd, data = result , write_enable=True)
                 case "AND":
-                    pass  # complete implementation here
+                    rd = self._decoded.rd
+                    ra = self._decoded.ra
+                    rb = self._decoded.rb
+                    op_a,op_b = self._regs.execute(ra=ra, rb=rb)
+                    self._alu_set_op("AND")
+                    result = self._alu.execute(op_a, op_b)
+                    self._regs.execute( rd=rd, data = result , write_enable=True)
                 case "OR":
-                    pass  # complete implementation here
+                    rd = self._decoded.rd
+                    ra = self._decoded.ra
+                    rb = self._decoded.rb
+                    op_a,op_b = self._regs.execute(ra=ra, rb=rb)
+                    self._alu_set_op("OR")
+                    result = self._alu.execute(op_a, op_b)
+                    self._regs.execute( rd=rd, data = result , write_enable=True)
                 case "SHFT":
                     self._alu.set_op("SHFT")
                     rd = self._decoded.rd
@@ -111,10 +135,14 @@ class Cpu:
                     if self._alu.zero:
                         offset = self.sext(self._decoded.imm, 8)
                         self._pc += offset  # take branch
-                case "BNE":
-                    pass  # complete implementation here
-                case "B":
-                    pass  # complete implementation here
+                case "BNE":#Kali
+                   if not self._alu.zero:
+                       offset = self.sext(self._decoded.imm, 8)
+                       self._pc += offset
+                case "B":#Kali
+                        offset = self.sext(self._decoded.imm, 8)
+                        self._pc += offset
+
                 case "CALL":
                     self._sp -= 1  # grow stack downward
                     # PC is incremented immediately upon fetch so already
