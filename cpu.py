@@ -86,11 +86,30 @@ class Cpu:
                     data = upper | lower
                     self._regs.execute(rd=rd, data=data, write_enable=True)
                 case "LOAD":
-                    pass  # complete implementation here
+                    rd = self._decoded.rd
+                    ra = self._decoded.ra
+                    offset = self.sext(self._decoded.imm, 8)
+                    base, _ = self._regs.execute(ra=ra)
+                    addr = base + offset
+                    value = self._d_mem.read(addr)
+                    self._regs.execute(rd=rd, data=value, write_enable=True)
                 case "STORE":
-                    pass  # complete implementation here
+                    ra = self._decoded.ra
+                    rb = self._decoded.rb
+                    offset = self.sext(self._decoded.imm, 8)
+                    base, _ = self._regs.execute(ra=ra)
+                    addr = base + offset
+                    data, _ = self._regs.execute(rb=rb)
+                    self._d_mem.write_enable(True)
+                    self._d_mem.write(addr, data)
                 case "ADDI":
-                    pass  # complete implementation here
+                    rd = self._decoded.rd
+                    ra = self._decoded.ra
+                    imm = self.sext(self._decoded.imm, 8)
+                    op_a, _ = self._regs.execute(ra=ra)
+                    self._alu.set_op("ADD")
+                    result = self._alu.execute(op_a, imm)
+                    self._regs.execute(rd=rd, data=result, write_enable=True)
                 case "ADD":
                     rd = self._decoded.rd
                     ra = self._decoded.ra
@@ -157,9 +176,11 @@ class Cpu:
                     # Get return address from memory via SP
                     # Increment SP
                     # Update PC
-                    pass  # complete implementation here
+                    ret_addr = self._d_mem.read(self._sp, from_stack=True)
+                    self._sp += 1
+                    self._pc = ret_addr
                 case "HALT":
-                    pass  # complete implementation here
+                    self._halt = True
                 case _:  # default
                     raise ValueError(
                         "Unknown mnemonic: " + str(self._decoded) + "\n" + str(self._ir)
@@ -175,7 +196,8 @@ class Cpu:
         self._decoded = Instruction(raw=self._ir)
 
     def _fetch(self):
-        pass  # complete implementation here
+        self._ir = self._i_mem.read(self._pc)
+        self._pc += 1
 
     def load_program(self, prog):
         self._i_mem.load_program(prog)
