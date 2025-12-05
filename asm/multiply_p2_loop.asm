@@ -9,6 +9,6 @@ Loop:
         STORE   R3, [R1]        ; MEM[R1] = R3
         ADD     R1, R1, R0      ; R1 = R1 + 1
         SUB     R2, R2, R0      ; R2 = R2 - 1
-        BNE     Loop            ; repeat until R2 = 0
+        BNE     Loop            ; repeat until R2 = 0;
 
         HALT
