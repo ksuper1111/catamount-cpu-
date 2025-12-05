@@ -40,9 +40,12 @@ class Register:
             raise ValueError("Register value out of range!")
         self.value = value
 
-
+    @property
+    def raw(self):
+        return self.value & 0xFFFF  # always unsigned
     def __repr__(self):
-        return f"{self.name}: {self.value:04X}"
+        return f"{self.raw:04X}"
+
 
 
 class RegisterFile:
@@ -142,7 +145,6 @@ class RegisterFile:
             raise TypeError("Cannot write: no data!")
         self._check_index(rd)
         self.registers[rd].write(data)
-
 
 
     def execute(self, rd=None, ra=None, rb=None, data=None, write_enable=False):
