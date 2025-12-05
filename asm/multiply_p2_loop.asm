@@ -5,7 +5,7 @@
         LOADI   R3, #0x0005     ; R3 = 5   (initial multiplicand)
 
 Loop:
-        SHFT    R3, R3, #1      ; R3 = R3 << 1  (multiply by 2)
+        SHFT    R3, R3, R4      ; R3 = R3 << 1  (multiply by 2)
         STORE   R3, [R1]        ; MEM[R1] = R3
         ADD     R1, R1, R0      ; R1 = R1 + 1
         SUB     R2, R2, R0      ; R2 = R2 - 1
