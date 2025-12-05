@@ -101,7 +101,7 @@ class Cpu:
                     offset = self.sext(self._decoded.imm, 8)
                     base, _ = self._regs.execute(ra=ra)
                     addr = base + offset
-                    data, _ = self._regs.execute(ra=rb)
+                    data = self._regs.execute(ra=rb)[0]
                     self._d_mem.write_enable(True)
                     self._d_mem.write(addr, data)
                     self._d_mem.write_enable(False)
@@ -150,7 +150,9 @@ class Cpu:
                     rd = self._decoded.rd
                     ra = self._decoded.ra
                     rb = self._decoded.rb
-                    op_a, op_b = self._regs.execute(ra=ra, rb=rb)
+                    op_a = self._regs.execute(ra=ra)[0]
+                    rb_raw = self._regs.execute(ra=rb)[0]
+                    op_b = self.sext(rb_raw, 8)
                     result = self._alu.execute(op_a, op_b)
                     self._regs.execute(rd=rd, data=result, write_enable=True)
                 case "BEQ":
