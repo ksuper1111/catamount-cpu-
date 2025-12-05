@@ -109,7 +109,7 @@ class Cpu:
                     ra = self._decoded.ra
                     imm = self.sext(self._decoded.imm, 8)
                     op_a, _ = self._regs.execute(ra=ra)
-                    self._alu.set_op("ADD")
+                    self._alu._op = "ADD"
                     result = self._alu.execute(op_a, imm)
                     self._regs.execute(rd=rd, data=result, write_enable=True)
                 case "ADD":
@@ -117,7 +117,7 @@ class Cpu:
                     ra = self._decoded.ra
                     rb = self._decoded.rb
                     op_a,op_b = self._regs.execute(ra=ra, rb=rb)
-                    self._alu_set_op("ADD")
+                    self._alu._op = "ADD"
                     result = self._alu.execute(op_a,op_b)
                     self._regs.execute( rd=rd, data = result , write_enable=True)
                 case "SUB":
@@ -125,7 +125,7 @@ class Cpu:
                     ra = self._decoded.ra
                     rb = self._decoded.rb
                     op_a,op_b = self._regs.execute(ra=ra, rb=rb)
-                    self._alu_set_op("SUB")
+                    self._alu._op = "SUB"
                     result = self._alu.execute(op_a, op_b)
                     self._regs.execute( rd=rd, data = result , write_enable=True)
                 case "AND":
@@ -133,7 +133,7 @@ class Cpu:
                     ra = self._decoded.ra
                     rb = self._decoded.rb
                     op_a,op_b = self._regs.execute(ra=ra, rb=rb)
-                    self._alu_set_op("AND")
+                    self._alu._op = "AND"
                     result = self._alu.execute(op_a, op_b)
                     self._regs.execute( rd=rd, data = result , write_enable=True)
                 case "OR":
@@ -141,11 +141,11 @@ class Cpu:
                     ra = self._decoded.ra
                     rb = self._decoded.rb
                     op_a,op_b = self._regs.execute(ra=ra, rb=rb)
-                    self._alu_set_op("OR")
+                    self._alu._op = "OR"
                     result = self._alu.execute(op_a, op_b)
                     self._regs.execute( rd=rd, data = result , write_enable=True)
                 case "SHFT":
-                    self._alu.set_op("SHFT")
+                    self._alu._op = "SHFT"
                     rd = self._decoded.rd
                     ra = self._decoded.ra
                     rb = self._decoded.rb
