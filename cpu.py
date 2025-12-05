@@ -101,7 +101,7 @@ class Cpu:
                     offset = self.sext(self._decoded.imm, 8)
                     base, _ = self._regs.execute(ra=ra)
                     addr = base + offset
-                    data, _ = self._regs.execute(rb=rb)
+                    data, _ = self._regs.execute(ra=rb)
                     self._d_mem.write_enable(True)
                     self._d_mem.write(addr, data)
                 case "ADDI":
