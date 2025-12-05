@@ -28,73 +28,39 @@ class Memory:
         self._write_enable = False
 
     def _check_addr(self, address):
-        #Make sure address is positive, in the desired range,
-        # otherwise raise a `ValueError`. Replace `pass` below.
-
-        #tests to see if the address is negative, if yes then ValueError
         if (address < 0):
             raise ValueError
-        #test to make sure the address is not in the range 0xFFFF and 0xFF00, if so then ValueError
         if (0 > address or address > 0xFFFF):
             raise ValueError
 
-
-
     def write_enable(self, b):
-        # Make sure `b` is a Boolean (hint: use `isinstance()).
-        # If not, raise `TypeError`. If OK, then set
-        # `_write_enable` accordingly. Replace `pass` below.
-
-        #tests if b is not boolean, if yes then TypeError
         if(not isinstance(b, bool)):
             raise TypeError
-        #sets _write_enable
         self._write_enable = b
 
-
-
-    def read(self, addr):
+    # ------- FIX #1 ----------
+    def read(self, addr, from_stack=False):
         """
         Return 16-bit word from memory (default if never written).
         """
-        # Make sure `addr` is OK by calling `_check_addr`. If OK, return value
-        # from `_cells` or default if never written. (Hint: use `.get()`.)
-        # Replace `pass` below.
-
-        #Checks is positive, and in the correct range, if not ValueError raise and program stops
         self._check_addr(addr)
-        #if address is correct, then return addr value from _cell or default
         return self._cells.get(addr, self.default)
 
-
-    def write(self, addr, value):
+    # ------- FIX #2 ----------
+    def write(self, addr, value, from_stack=False):
         """
         Write 16-bit word to memory, masking to 16 bits.
         """
-        # Check to see if `_write_enable` is true. If not, raise `RuntimeError`.
-        # Otherwise, call `_check_addr()`. If OK, write masked value to the
-        # selected address, then turn off `_write_enable` when done. Return
-        # `True` on success. Replace `pass` below.
-
-        #checks _write_enable,if doesn't hold then RunTimeError
         if (not self._write_enable):
             raise RuntimeError
-        #checks to see if address is valid
         self._check_addr(addr)
-        #writes value to cell at the address provided
         self._cells[addr] = (value & 0xFFFF)
-        #turns off _write_enable (false)
         self._write_enable = False
         return True
 
     def hexdump(self, start=0, stop=None, width=8):
-        """
-        Yield formatted lines showing memory cells in ascending order
-        from `start` to the highest initialized address (or `stop` if provided).
-        Uninitialized cells display as 0000.
-        """
         if not self._cells:
-            return  # nothing to show
+            return
 
         highest = max(self._cells)
         end = highest + 1 if stop is None else min(stop, highest + 1)
@@ -130,51 +96,33 @@ class DataMemory(Memory):
 
 class InstructionMemory(Memory):
     """
-    Word-addressable memory for instructions. Load once, then read-only
-    thereafter.
+    Word-addressable memory for instructions. Load once, then read-only thereafter.
     """
 
     def __init__(self, default=0):
         super().__init__(default)
-        self._loading = False  # internal guard flag
+        self._loading = False
 
-    def write(self, addr, value):
-        """
-        Prevent runtime writes except during program loading.
-        """
+    # ------- FIX #3 ----------
+    def write(self, addr, value, from_stack=False):
         if not self._loading:
             raise RuntimeError("Cannot write to instruction memory outside of loader.")
         super().write(addr, value)
         return True
 
     def load_program(self, words, start_addr=0x0000):
-        """
-        Load list of 16-bit words into consecutive memory cells.
-        """
         self._loading = True
-        # Write each word in `words` to successive addresses in instruction
-        # memory. Set `_write_enable` as needed can call parent write with
-        # `super().write(start_addr + offset, word)` as needed. Important:
-        # Ensure that `_loading` and `_write_enable` are set to `False` when
-        # done. (Hint: use `try`/`finally`.) Replace `pass` below.
-
-        #trying to write each word into instruction memory
         try:
-            #loops through the words list, at the index offset
             for offset, word in enumerate(words):
                 self._write_enable = True
-                #writes each word in successive addresses in instruction memory
                 super().write(start_addr + offset, word)
-        #_loading and _write_enable are set false
         finally:
             self._loading = False
             self._write_enable = False
 
 
-
 if __name__ == "__main__":
 
-    # Quick smoke test...
     dm = DataMemory()
     dm.write_enable(True)
     dm.write(0x0000, 0x1234)
