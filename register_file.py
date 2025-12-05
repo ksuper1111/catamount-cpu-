@@ -42,7 +42,7 @@ class Register:
 
     @property
     def raw(self):
-        return self.value & 0xFFFF  # always unsigned
+        return self.value & 0xFFFF  # always unsigned for this
     def __repr__(self):
         return f"{self.raw:04X}"
 
