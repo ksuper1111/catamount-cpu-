@@ -104,6 +104,7 @@ class Cpu:
                     data, _ = self._regs.execute(ra=rb)
                     self._d_mem.write_enable(True)
                     self._d_mem.write(addr, data)
+                    self._d_mem.write_enable(False)
                 case "ADDI":
                     rd = self._decoded.rd
                     ra = self._decoded.ra
@@ -172,8 +173,10 @@ class Cpu:
                     self._d_mem.write_enable(True)
                     # push return address...
                     self._d_mem.write(self._sp, ret_addr, from_stack=True)
+                    self._d_mem.write_enable(False)
                     offset = self._decoded.imm
                     self._pc += self.sext(offset, 8)  # jump to target
+
                 case "RET":
                     # Get return address from memory via SP
                     # Increment SP
